@@ -1,0 +1,94 @@
+$date_stamp: date "Display as: MMM dd, yyyy"
+
+$time_stamp: time "Display as hh:mm am/pm"
+
+$title "The full title of a post."
+  title!: <= 200 chars "Exact value TBD."
+
+$short_title "Abbreviated title for links and page name."
+  short_title!: <=100 chars "Exact value TBD, but short enough to go with a link on twitter."
+
+$body "The core 'blob' of a post."
+  body!: <10000 words "Exact value TBD. Or maybe there is no limit."
+
+$admin_metadata
+  ?author: @person "The original person who wrote the page/post."
+  ?edited_by: @person "The last person to edit the page."
+  ?published_date!: $date_stamp "Date the page/post was actually published."
+  ?created_date!: $date_stamp "Initial date that the page/post was created."
+  ?url: @url "Yeesh. The only thing that really matters!"
+
+$descriptive_metadata
+  category: 1 phrase "Options: Awesome, Pretty Good, Cool, Mediocre, Burn it"
+  tags: >=0 words
+
+$address
+  streetAddress!: 1 phrase "Street address of location."
+  streetAddress2: 1 phrase "Additional line of street address of location."
+  city!: 1 phrase "The name of the city or locality. Default to 'Calgary'."
+  region!: 1 phrase "The province or state. Default to 'Alberta'."
+  country!: 1 phrase "The country. Default to 'Canada'."
+  postal_code: =6 alphanum "Postal code: 'A0A 0A0' or Zip code: '0000000'?."
+
+$post_base "Forms the basis of any post."
+  $title
+  $body
+  $admin_metadata
+  $descriptive_metadata
+  #can-have: @cover_photo
+
+blog_post
+  $post_base
+  subtitle: <=200 chars
+  summary: <=50 words
+  #can-have: @attachment "Possibly multiple attachments."
+
+simple_post
+  $post_base
+
+event "This is a new content type. It allows us to create proper descriptions of events and create relationships based on the speaker(s)."
+  date!: $date_stamp
+  start_time!: $time_stamp
+  end_time!: $time_stamp "This may be replaced by 'duration'."
+  $title
+  description!: <1000 words
+  ticket_sales_link: @url
+  presentation_link: @url
+  speaker!: >=1 @person
+  #can-have: @cover_photo
+  #has: @location
+
+person "Basic description of a person used to display their details and link elements together."
+  first_name!: name "e.g. 'Ford'"
+  last_name!: name "e.g. 'Prefect'"
+  job_title!: 1 phrase "e.g. 'Space Hitchhiker Extraordinaire'"
+  bio_short: <250 words
+  bio_long!: <1000 words
+  twitter_handle: 1 word "Person's Twitter handle. '@' symbol added automatically?"
+  facebook_link: @url "Link to person's Facebook profile page."
+  linkedin_link: @url "Link to person's LinkedIn profile page. (Preferred over FB.)"
+  profile_page_link: @url
+  phone_number: 10 digits "321-555-1234 -- Dash '-' separators"
+  email_address: 1 phrase "e.g. hitchhiker42@hhgttg.com"
+  #has: @profile_photo "If the person hasn't added a profile photo, a stock one will be applied."
+
+location
+  name!: 1 phrase "The 'human-friendly' name of the location for easy reference."
+  $address
+  map_link: @url "A link to a Google or Bing map showing the location."
+  ?latitude: float "Possible alternative to map_link if we can auto-render a map."
+  ?longitude: float "Possible alternative to map_link if we can auto-render a map."
+
+url "Combines a label and the href into a single content type."
+  label: <200 chars "This is arbitrary right now. Replaced by href if doesn't exist."
+  href!: 1 url "Adhere to standard URL rules."
+
+profile_photo "Everybody's got one :)"
+  width!: 100 px "Exact width required for the image."
+  height!: 100 px "Exact height required for the image."
+
+cover_photo "Used primarily on enriched blog posts."
+  width!: 999 px "Determine actual width."
+  height!: <=300 px "Determine specific value."
+  attribution_phrase: 1 phrase "e.g. 'Props to teh internets for this image.'"
+  attribution_link: @url "A link to the original image or source page."

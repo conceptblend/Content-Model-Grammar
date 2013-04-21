@@ -1,0 +1,55 @@
+br
+
+.accordion#ctypes
+
+  each ctype in contentTypes
+    .accordion-group
+      a(name="#{ctype.contentType}", id="#{ctype.contentType})
+      .accordion-heading
+        h3
+          a.accordion-toggle(data-toggle="collapse", data-parent="ctypes", href="#collapse-#{ctype.contentType}")= ctype.contentType
+      .accordion-body.collapse.in(id="collapse-#{ctype.contentType}")
+        .accordion-inner          
+          blockquote= ctype.description
+          table.table
+            each p in ctype.properties
+              tr
+                if p.attr
+                  td.span2
+                    = p.attr
+                    if p.required
+                      &nbsp;
+                      strong.text-error *
+                  td.span3
+                    em.text-warning
+                      if p.value && p.value.unit
+                        if p.value.equality
+                          case p.value.equality
+                            when 'lt': <
+                            when 'lte': <=
+                            when 'gt': >
+                            when 'gte': >=
+                            when 'eq': =
+                          &nbsp;
+                        if p.value.quantity
+                          = p.value.quantity
+                          &nbsp;
+                        if (p.value.unit[0] == "@")
+                          a(href="##{p.value.unit.substr(1)}")= p.value.unit.substr(1)
+                        else
+                          = p.value.unit
+                    td
+                      span.muted
+                        if p.privacy == 'hidden'
+                          | (Hidden from UI)&nbsp;
+                        else if p.privacy == 'optional'
+                          | (Administrative)&nbsp;
+                      = p.description
+                else if p.relationship
+                  td.span2
+                    = p.relationship
+                  td.span3
+                    a(href="##{p.contentType.substr(1)}")
+                      em= p.contentType.substr(1)
+                  td
+                    p= p.description

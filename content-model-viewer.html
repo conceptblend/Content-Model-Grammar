@@ -1,0 +1,145 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Content Model Viewer</title>
+<link rel="stylesheet" href="css/bootstrap_cmp.css" type="text/css"/>
+<script src="lib/jquery-1.9.0.min.js"></script>
+<script src="lib/bootstrap.min.js"></script>
+<script src="lib/json2.js"></script>
+<script src="lib/jade.min.js"></script>
+<script src="lib/content-model-parser.js"></script>
+<script src="lib/editor-helpers.js"></script>
+
+<script>
+
+function begin(hamlTextID, dataStructID){
+	var markup = document.getElementById(hamlTextID).value;	
+	var data = document.getElementById(dataStructID).value || "{}";
+	// convert any tabs to the double space indent we're using
+	markup = tabsToSpaces(markup);
+	// put it back, too
+	document.getElementById(hamlTextID).value = markup;
+	var success = true;
+	
+	try {
+		var HamlTmpl = jade.compile(markup, {});
+		$("#markupError").removeClass("alert-error").addClass("alert-success").text("Markup's all good.");
+	} catch (e) {
+		$("#markupError").removeClass("alert-success").addClass("alert-error").text(e);
+		success = false;
+	}
+	
+	if (success) {
+		// PEG parse the Content Model Data
+		try {
+			var pegParsedData = ctypeParser.parse(data);
+			$("#cmError").removeClass("alert-error").addClass("alert-success").text("Model data's all good.");
+		} catch (e) {
+			$("#cmError").removeClass("alert-success").addClass("alert-error").text(buildErrorMessage(e));
+		}
+		
+		if (success){
+			var parsedHtml = HamlTmpl(pegParsedData);//JSON.parse(pegParsedData));
+			document.getElementById('output').innerHTML = parsedHtml;
+		}
+	}
+}
+
+function buildErrorMessage(e) {
+	return e.line !== undefined && e.column !== undefined
+		? "Line " + e.line + ", column " + e.column + ": " + e.message
+		: e.message;
+}
+
+function _export(hamlTextID, dataStructID){
+	var markup = document.getElementById(hamlTextID).value;	
+	var data = document.getElementById(dataStructID).value || "{}";
+	
+	var combined  = "//- ############\n//- Markup\n//- ############\n" + markup +"\n//- ############\n//- /Markup\n//- ############"+ "\n//- ############\n//- Data\n//- ############\n" + data + "\n//- ############\n//- /Data\n//- ############";
+
+	$('#copyAll').modal({ backdrop:false, keyboard:true, show: true });
+
+	var trgt = document.getElementById('copyText');
+	trgt.value = combined;
+	trgt.select();	
+	
+}
+
+// On Load
+$(function(){
+	$('#program').keyup(function(e) {
+		var $that = $(e.target);
+		
+		//console.log (e.keyCode);
+		switch (e.keyCode){
+			case 13:
+				// try to compile and see if we get any errors
+				try{
+					matchPreviousIndent('program');
+					begin('program', 'data');
+				}catch(e){
+					//do nothing
+					throw e;
+				}
+				break;
+			default:
+				break;
+		}   
+  });
+
+	
+	$('#outdent').click(function(e){
+		InOutdentSelection('program', true);
+	});
+	$('#indent').click(function(e){
+		InOutdentSelection('program');
+	});
+
+	
+});
+
+</script>
+</head>
+
+<body>
+<div class="container-fluid">
+  <div id="output" style="padding-bottom: 350px"></div>
+  <div class="navbar navbar-fixed-bottom">
+    <div class="navbar-inner">
+      <div class="container-fluid">
+        <div class="row-fluid controls-row">
+          <div class="tab-content">
+            <div class="tab-pane active" id="pane1">
+              <div class="span1"><br>
+                <div class="btn-group pull-right"> <a href="#" id="outdent" class="btn"><i class="icon-arrow-left"></i></a> <a href="#" id="indent" class="btn"><i class="icon-arrow-right"></i></a> </div>
+              </div>
+              <div class="span5">
+                <label>Jade</label>
+                <textarea rows="15" class="input-block-level" id="program" wrap="off"></textarea>
+                <div class="alert" id="markupError"></div>
+              </div>
+              <div class="span5">
+                <label>Data</label>
+                <textarea rows="15" class="input-block-level" id="data" wrap="off"></textarea>
+                <div class="alert" id="cmError"></div>
+              </div>
+              <div class="span1"><br>
+                <a class="btn btn-success input-block-level" onClick="begin('program', 'data'); return false;"><br>
+                <strong>Render Model</strong><br>
+                <br>
+                </a>
+                <a href="#" onClick="_export('program', 'data'); return false;" class="btn btn-info input-block-level">Export</a>
+                <a href="#" data-toggle="tab" data-target="#pane2" class="btn input-block-level">Hide</a></div>
+            </div>
+            <div class="tab-pane" id="pane2"> <a href="#" data-toggle="tab" data-target="#pane1" class="btn input-block-level">Show</a> </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- copying dialog -->
+<div role="dialog" class="modal hide" id="copyAll"><div class="modal-header"><button type="button" data-dismiss="modal" class="close">×</button><h3>Copy all</h3></div><div class="modal-body"><textarea rows="10" class="input-block-level" id="copyText"></textarea></div><div class="modal-footer"><a href="#" data-dismiss="modal" class="btn btn-primary">Close</a></div></div>
+</body>
+</html>
