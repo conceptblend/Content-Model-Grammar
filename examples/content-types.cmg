@@ -16,7 +16,7 @@ $admin_metadata
   ?edited_by: @person "The last person to edit the page."
   ?published_date!: $date_stamp "Date the page/post was actually published."
   ?created_date!: $date_stamp "Initial date that the page/post was created."
-  ?url: @url "Yeesh. The only thing that really matters!"
+  ?url: @link "Yeesh. The only thing that really matters!"
 
 $descriptive_metadata
   category: 1 phrase "Options: Awesome, Pretty Good, Cool, Mediocre, Burn it"
@@ -52,8 +52,8 @@ event "This is a new content type. It allows us to create proper descriptions of
   end_time!: $time_stamp "This may be replaced by 'duration'."
   $title
   description!: <1000 words
-  ticket_sales_link: @url
-  presentation_link: @url
+  ticket_sales_link: @link
+  presentation_link: @link
   speaker!: >=1 @person
   #can-have: @cover_photo
   #has: @location
@@ -65,9 +65,9 @@ person "Basic description of a person used to display their details and link ele
   bio_short: <250 words
   bio_long!: <1000 words
   twitter_handle: 1 word "Person's Twitter handle. '@' symbol added automatically?"
-  facebook_link: @url "Link to person's Facebook profile page."
-  linkedin_link: @url "Link to person's LinkedIn profile page. (Preferred over FB.)"
-  profile_page_link: @url
+  facebook_link: @link "Link to person's Facebook profile page."
+  linkedin_link: @link "Link to person's LinkedIn profile page. (Preferred over FB.)"
+  profile_page_link: @link
   phone_number: 10 digits "321-555-1234 -- Dash '-' separators"
   email_address: 1 phrase "e.g. hitchhiker42@hhgttg.com"
   #has: @profile_photo "If the person hasn't added a profile photo, a stock one will be applied."
@@ -75,13 +75,13 @@ person "Basic description of a person used to display their details and link ele
 location
   name!: 1 phrase "The 'human-friendly' name of the location for easy reference."
   $address
-  map_link: @url "A link to a Google or Bing map showing the location."
+  map_link: @link "A link to a Google or Bing map showing the location."
   ?latitude: float "Possible alternative to map_link if we can auto-render a map."
   ?longitude: float "Possible alternative to map_link if we can auto-render a map."
 
-url "Combines a label and the href into a single content type."
+link "Combines a label and the href into a single content type."
   label: <200 chars "This is arbitrary right now. Replaced by href if doesn't exist."
-  href!: 1 url "Adhere to standard URL rules."
+  URL!: =1 URL "Adhere to standard URL rules."
 
 profile_photo "Everybody's got one :)"
   width!: 100 px "Exact width required for the image."
@@ -91,4 +91,4 @@ cover_photo "Used primarily on enriched blog posts."
   width!: 999 px "Determine actual width."
   height!: <=300 px "Determine specific value."
   attribution_phrase: 1 phrase "e.g. 'Props to teh internets for this image.'"
-  attribution_link: @url "A link to the original image or source page."
+  attribution_link: @link "A link to the original image or source page."

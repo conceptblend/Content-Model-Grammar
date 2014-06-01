@@ -8,7 +8,7 @@ br
       .accordion-heading
         h3
           a.accordion-toggle(data-toggle="collapse", data-parent="ctypes", href="#collapse-#{ctype.contentType}")= ctype.contentType
-      .accordion-body.collapse.in(id="collapse-#{ctype.contentType}")
+      .accordion-body.collapse(id="collapse-#{ctype.contentType}")
         .accordion-inner          
           blockquote= ctype.description
           table.table
@@ -47,7 +47,7 @@ br
                       = p.description
                 else if p.relationship
                   td.span2
-                    = p.relationship
+                    span.text-error= p.relationship
                   td.span3
                     a(href="##{p.contentType.substr(1)}")
                       em= p.contentType.substr(1)

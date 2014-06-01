@@ -13,17 +13,17 @@
 
 <script>
 
-function begin(hamlTextID, dataStructID){
-	var markup = document.getElementById(hamlTextID).value;	
+function begin(jadeTextID, dataStructID){
+	var markup = document.getElementById(jadeTextID).value;	
 	var data = document.getElementById(dataStructID).value || "{}";
 	// convert any tabs to the double space indent we're using
 	markup = tabsToSpaces(markup);
 	// put it back, too
-	document.getElementById(hamlTextID).value = markup;
+	document.getElementById(jadeTextID).value = markup;
 	var success = true;
 	
 	try {
-		var HamlTmpl = jade.compile(markup, {});
+		var JadeTmpl = jade.compile(markup, {});
 		$("#markupError").removeClass("alert-error").addClass("alert-success").text("Markup's all good.");
 	} catch (e) {
 		$("#markupError").removeClass("alert-success").addClass("alert-error").text(e);
@@ -40,7 +40,7 @@ function begin(hamlTextID, dataStructID){
 		}
 		
 		if (success){
-			var parsedHtml = HamlTmpl(pegParsedData);//JSON.parse(pegParsedData));
+			var parsedHtml = JadeTmpl(pegParsedData);//JSON.parse(pegParsedData));
 			document.getElementById('output').innerHTML = parsedHtml;
 		}
 	}
@@ -52,8 +52,8 @@ function buildErrorMessage(e) {
 		: e.message;
 }
 
-function _export(hamlTextID, dataStructID){
-	var markup = document.getElementById(hamlTextID).value;	
+function _export(jadeTextID, dataStructID){
+	var markup = document.getElementById(jadeTextID).value;	
 	var data = document.getElementById(dataStructID).value || "{}";
 	
 	var combined  = "//- ############\n//- Markup\n//- ############\n" + markup +"\n//- ############\n//- /Markup\n//- ############"+ "\n//- ############\n//- Data\n//- ############\n" + data + "\n//- ############\n//- /Data\n//- ############";
